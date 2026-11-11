@@ -1,0 +1,12 @@
+{
+  "name": "spotify-history-scripts",
+  "version": "0.1.0",
+  "author": "davidhartsough",
+  "type": "module",
+  "devDependencies": {
+    "@biomejs/biome": "*",
+    "@types/node": "*",
+    "tsx": "*",
+    "typescript": "*"
+  }
+}

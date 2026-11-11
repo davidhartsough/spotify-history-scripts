@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"module": "nodenext",
+		"target": "esnext",
+		"types": ["node"],
+		"lib": ["esnext"],
+		"moduleResolution": "nodenext",
+		"esModuleInterop": true,
+		"rewriteRelativeImportExtensions": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"strict": true,
+		"jsx": "react-jsx",
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"noUncheckedSideEffectImports": true,
+		"allowImportingTsExtensions": true,
+		"moduleDetection": "force",
+		"skipLibCheck": true
+	}
+}

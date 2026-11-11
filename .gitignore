@@ -1,0 +1,12 @@
+node_modules
+.DS_Store
+streaming-history
+years
+video
+stats
+*.pdf
+*.txt
+combined.json
+combined.ts
+pnpm-lock.yaml
+pnpm-workspace.yaml
