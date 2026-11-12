@@ -1,7 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import stats from "./stats/years/ts/2026.ts";
-
-type ArtistCount = { artist: string; count: number };
+import type { ArtistCount } from "./types.ts";
 
 const CSV_OUTPUT_DIR = "./stats/artists/csv";
 const JSON_OUTPUT_DIR = "./stats/artists/json";

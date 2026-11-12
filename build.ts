@@ -1,25 +1,10 @@
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-
-console.log("Let's go!");
-
-type RawEntry = {
-	master_metadata_track_name?: string | null;
-	master_metadata_album_artist_name?: string | null;
-	skipped?: boolean | null;
-};
-
-type Song = { artist: string; song: string };
+import type { RawEntry, Song } from "./types.ts";
+import { getFileNames, mkFileSet, readJSON } from "./utils.ts";
 
 const INPUT_DIR = "./streaming-history";
-const YEARS_JSON_DIR = "./years/json";
-const YEARS_TS_DIR = "./years/ts";
-
-const mkFile = (fileName: string, content: string) =>
-	writeFile(fileName, `${content}\n`, "utf8");
-
-const mkTsFile = (fileName: string, content: string) =>
-	mkFile(fileName, `export default ${content};`);
+const YEARS_DIR = "./years";
+const COMBINED_DIR = "./combined";
 
 const fileNameRegex = /^Streaming_History_Audio_(\d{4})(?:_(\d+))?\.json$/i;
 
@@ -27,10 +12,8 @@ const byYear = new Map<string, Song[]>();
 const combined: Song[] = [];
 
 async function main() {
-	const filenames = (await readdir(INPUT_DIR))
-		.filter((name) => fileNameRegex.test(name))
-		.sort();
-	const files = filenames
+	const fileNames = await getFileNames(INPUT_DIR, fileNameRegex);
+	const files = fileNames
 		.map((name) => {
 			const match = name.match(fileNameRegex);
 			if (!match) {
@@ -45,8 +28,7 @@ async function main() {
 
 	for (const file of files) {
 		const filePath = path.join(INPUT_DIR, file.name);
-		const raw = await readFile(filePath, "utf8");
-		const entries: RawEntry[] = JSON.parse(raw);
+		const entries: RawEntry[] = await readJSON(filePath);
 
 		const songs: Song[] = entries
 			.filter(
@@ -67,20 +49,13 @@ async function main() {
 		console.log(`Read ${file.name}: ${songs.length} plays kept`);
 	}
 
-	await mkdir(YEARS_JSON_DIR, { recursive: true });
-	await mkdir(YEARS_TS_DIR, { recursive: true });
-
 	for (const [year, songs] of [...byYear.entries()].sort()) {
-		const json = JSON.stringify(songs, null, 0);
-		await mkFile(path.join(YEARS_JSON_DIR, `${year}.json`), json);
-		await mkTsFile(path.join(YEARS_TS_DIR, `${year}.ts`), json);
+		await mkFileSet(`${YEARS_DIR}/${year}`, year, songs);
 		combined.push(...songs);
 		console.log(`${year}: ${songs.length} songs`);
 	}
 
-	const combinedJson = JSON.stringify(combined, null, 0);
-	await mkFile("./combined.json", combinedJson);
-	await mkTsFile("./combined.ts", combinedJson);
+	await mkFileSet(COMBINED_DIR, "combined", combined);
 
 	console.log(`Done. ${byYear.size} years, ${combined.length} total plays.`);
 }
